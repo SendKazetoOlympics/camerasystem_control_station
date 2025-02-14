@@ -8,6 +8,7 @@
     function addIP() {
         const ip = document.getElementById('ip').value;
         ips.push(ip);
+        ips = [...new Set(ips)];
         console.log(ips);
     }
 
