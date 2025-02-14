@@ -22,8 +22,6 @@
 <!-- Add a text field for IP address -->
 <input type="text" id="ip" placeholder="Enter IP Address">
 
-<!-- Add a button for pinging the IP address -->
-<button id="ping">Ping</button>
 
 <!-- Display the list of IP addresses -->
 <ul>
@@ -31,3 +29,8 @@
         <li>{ip}</li>
     {/each}
 </ul>
+
+<button class='btn' id="ping">Ping</button>
+<button class='btn' id="start">Start</button>
+<button class='btn' id="stop">Stop</button>
+<button class='btn' id="Download">Download</button>
