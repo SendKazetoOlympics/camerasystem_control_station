@@ -2,15 +2,20 @@
 
 <script lang="ts">
     import { io, Socket } from 'socket.io-client';
-    import { CameraConnection } from '$lib/CameraConnection';
+    import { CameraConnection } from '$lib/CameraConnection.svelte';
 
-    let ips: string[] = $state([]);
     let connections: CameraConnection[] = $state([]);
+    const status = $derived.by(() => connections.map((connection) => connection.status));
+    $effect(() => {
+        connections.forEach((connection) => {
+            connection.socket.on('pong', (callback: number) => {
+                connection.status.timestamp = callback;
+            });
+        });
+    });
 
     function addIP() {
         const ip: string = (document.getElementById('ip') as HTMLInputElement).value;
-        ips.push(ip);
-        ips = [...new Set(ips)];
         connections.push(new CameraConnection(ip));
     }
 
@@ -38,8 +43,8 @@
 
 <!-- Display the list of IP addresses -->
 <ul>
-    {#each ips as ip}
-        <li>{ip}</li>
+    {#each connections as connection, i}
+        <li>{connection.ip_address} {status[i].timestamp}</li>
     {/each}
 </ul>
 
