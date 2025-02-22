@@ -1,20 +1,30 @@
 <!-- Make a text field that take text as ip input and set a button to send a request to it -->
 
 <script lang="ts">
-    import { onMount } from 'svelte';
-    import { io } from 'socket.io-client';
+    import { io, Socket } from 'socket.io-client';
+    import { CameraConnection } from '$lib/CameraConnection';
 
-    let ips = $state([]);
-
-    const socket = io("http://localhost:5000");
+    let ips: string[] = $state([]);
+    let sockets: Socket[] = $state([]);
 
     function addIP() {
-        const ip = document.getElementById('ip').value;
+        const ip: string = (document.getElementById('ip') as HTMLInputElement).value;
         ips.push(ip);
         ips = [...new Set(ips)];
-        console.log(ips);
+        sockets.push(io(ip));
     }
 
+    function start_ping() {
+        sockets.forEach((socket) => {
+            setInterval(() => {
+                const start = Date.now();
+                socket.emit('ping', () => {
+                    const duration = Date.now() - start;
+                    console.log(duration);
+                });
+            }, 1000);
+        });
+    }
 
 </script>
 
@@ -33,7 +43,9 @@
     {/each}
 </ul>
 
-<button class='btn' id="ping">Ping</button>
+
+
 <button class='btn' id="start">Start</button>
 <button class='btn' id="stop">Stop</button>
 <button class='btn' id="Download">Download</button>
+
