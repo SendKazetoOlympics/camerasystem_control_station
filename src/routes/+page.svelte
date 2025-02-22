@@ -5,24 +5,24 @@
     import { CameraConnection } from '$lib/CameraConnection';
 
     let ips: string[] = $state([]);
-    let sockets: Socket[] = $state([]);
+    let connections: CameraConnection[] = $state([]);
 
     function addIP() {
         const ip: string = (document.getElementById('ip') as HTMLInputElement).value;
         ips.push(ip);
         ips = [...new Set(ips)];
-        sockets.push(io(ip));
+        connections.push(new CameraConnection(ip));
     }
 
     function start_ping() {
-        sockets.forEach((socket) => {
-            setInterval(() => {
-                const start = Date.now();
-                socket.emit('ping', () => {
-                    const duration = Date.now() - start;
-                    console.log(duration);
-                });
-            }, 1000);
+        connections.forEach((connection) => {
+            connection.startHeartbeat();
+        });
+    }
+
+    function stop_ping() {
+        connections.forEach((connection) => {
+            connection.stopHeartbeat();
         });
     }
 
@@ -45,7 +45,7 @@
 
 
 
-<button class='btn' id="start">Start</button>
-<button class='btn' id="stop">Stop</button>
+<button class='btn' id="start" onclick={start_ping}>Start</button>
+<button class='btn' id="stop" onclick={stop_ping}>Stop</button>
 <button class='btn' id="Download">Download</button>
 

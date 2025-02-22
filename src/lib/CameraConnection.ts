@@ -43,8 +43,8 @@ export class CameraConnection {
             this.startReconnectTimer();
         });
 
-        this.socket.on('heartbeat_response', (data: { status: string; camera_id: string }) => {
-            console.log('Heartbeat acknowledged:', data);
+        this.socket.on('heartbeat', () => {
+            console.log('Received heartbeat');
         });
 
         this.socket.on('camera_status', (data: CameraStatus) => {
@@ -56,10 +56,15 @@ export class CameraConnection {
         });
     }
 
-    public startHeartbeat(cameraId: string): void {
+    public startHeartbeat(): void {
+        console.log('Starting heartbeat');
         this.heartbeatInterval = setInterval(() => {
-            this.socket.emit('heartbeat', { camera_id: cameraId });
-        }, 5000);
+            const start = Date.now();
+            this.socket.emit('ping', () => {
+                const duration = Date.now() - start;
+                console.log(duration);
+            });
+        }, 1000);
     }
 
     public stopHeartbeat(): void {
