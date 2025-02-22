@@ -30,7 +30,7 @@ export class CameraConnection {
     }
 
     public startHeartbeat(): void {
-        console.log('Starting heartbeat');
+        console.log('Starting heartbeat at' + this.ip_address);
         this.heartbeatInterval = setInterval(() => {
             this.socket.emit('ping', (callback: number) => {
                 console.log(callback);
@@ -41,15 +41,20 @@ export class CameraConnection {
 
     public stopHeartbeat(): void {
         if (this.heartbeatInterval) {
+            console.log('Stopping heartbeat at' + this.ip_address);
             clearInterval(this.heartbeatInterval);
             this.heartbeatInterval = null;
         }
     }
 
     public startRecording(): void {
+        console.log('Starting recording on camera ' + this.ip_address);
+        this.socket.emit('start_recording');
     }
 
     public stopRecording(): void {
+        console.log('Stopping recording on camera ' + this.ip_address);
+        this.socket.emit('stop_recording');
     }
 
     public downloadRecording(): void {
