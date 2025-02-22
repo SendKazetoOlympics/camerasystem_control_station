@@ -2,8 +2,11 @@
 
 <script lang="ts">
     import { onMount } from 'svelte';
+    import { io } from 'socket.io-client';
 
     let ips = $state([]);
+
+    const socket = io("http://localhost:5000");
 
     function addIP() {
         const ip = document.getElementById('ip').value;
