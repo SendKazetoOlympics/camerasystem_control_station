@@ -59,10 +59,8 @@ export class CameraConnection {
     public startHeartbeat(): void {
         console.log('Starting heartbeat');
         this.heartbeatInterval = setInterval(() => {
-            const start = Date.now();
-            this.socket.emit('ping', () => {
-                const duration = Date.now() - start;
-                console.log(duration);
+            this.socket.emit('ping', (callback: string) => {
+                console.log(callback);
             });
         }, 1000);
     }
