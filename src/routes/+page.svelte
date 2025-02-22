@@ -24,6 +24,12 @@
         });
     }
 
+    function start_recording() {
+        connections.forEach((connection) => {
+            connection.startRecording();
+        });
+    }
+
 </script>
 
 <!-- Add two buttons, one for adding an entry for IP and another for deleting -->
@@ -37,7 +43,7 @@
 <!-- Display the list of IP addresses -->
 <ul>
     {#each connections as connection, i}
-        <li>{connection.ip_address} {status[i].timestamp}</li>
+        <li>{connection.ip_address} {status[i].status} {status[i].timestamp}</li>
     {/each}
 </ul>
 
