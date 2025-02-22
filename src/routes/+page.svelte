@@ -6,13 +6,6 @@
 
     let connections: CameraConnection[] = $state([]);
     const status = $derived.by(() => connections.map((connection) => connection.status));
-    $effect(() => {
-        connections.forEach((connection) => {
-            connection.socket.on('pong', (callback: number) => {
-                connection.status.timestamp = callback;
-            });
-        });
-    });
 
     function addIP() {
         const ip: string = (document.getElementById('ip') as HTMLInputElement).value;
