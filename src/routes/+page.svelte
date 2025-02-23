@@ -1,7 +1,6 @@
 <!-- Make a text field that take text as ip input and set a button to send a request to it -->
 
 <script lang="ts">
-    import { io, Socket } from 'socket.io-client';
     import { CameraConnection } from '$lib/CameraConnection.svelte';
 
     let connections: CameraConnection[] = $state([]);
@@ -30,6 +29,26 @@
         });
     }
 
+    function stop_recording() {
+        connections.forEach((connection) => {
+            connection.stopRecording();
+        });
+    }
+
+    function download() {
+        connections.forEach((connection) => {
+            fetch(`http://${connection.ip_address}/download`)
+                .then((response) => response.blob())
+                .then((blob) => {
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = connection.ip_address + '_video.mp4';
+                    a.click();
+                });
+        });
+    }
+
 </script>
 
 <!-- Add two buttons, one for adding an entry for IP and another for deleting -->
@@ -49,7 +68,7 @@
 
 
 
-<button class='btn' id="start" onclick={start_ping}>Start</button>
-<button class='btn' id="stop" onclick={stop_ping}>Stop</button>
-<button class='btn' id="Download">Download</button>
+<button class='btn' id="start" onclick={start_recording}>Start</button>
+<button class='btn' id="stop" onclick={stop_recording}>Stop</button>
+<button class='btn' id="Download" onclick={download}>Download</button>
 

@@ -57,9 +57,6 @@ export class CameraConnection {
         this.socket.emit('stop_recording');
     }
 
-    public downloadRecording(): void {
-    }
-
     private startReconnectTimer(): void {
         this.reconnectTimeout = setTimeout(() => {
             this.socket.connect();
