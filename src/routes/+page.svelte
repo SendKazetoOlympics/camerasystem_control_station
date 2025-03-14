@@ -8,7 +8,7 @@
 
     function addIP() {
         const ip: string = (document.getElementById('ip') as HTMLInputElement).value;
-        connections.push(new CameraConnection(ip));
+        connections.push(new CameraConnection(ip, 5000));
     }
 
     function start_ping() {
@@ -37,7 +37,7 @@
 
     function download() {
         connections.forEach((connection) => {
-            fetch(`http://${connection.ip_address}/download`)
+            fetch(`http://${connection.ip_address + ':' + connection.port}/download`)
                 .then((response) => response.blob())
                 .then((blob) => {
                     const url = window.URL.createObjectURL(blob);

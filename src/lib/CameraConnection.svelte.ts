@@ -8,6 +8,7 @@ interface CameraStatus {
 
 export class CameraConnection {
     ip_address: string;
+    port: number
     private socket: Socket;
     status: CameraStatus = $state(
         {
@@ -18,9 +19,10 @@ export class CameraConnection {
     private heartbeatInterval: NodeJS.Timeout | null;
     private reconnectTimeout: NodeJS.Timeout | null;
 
-    constructor(serverUrl: string) {
+    constructor(serverUrl: string, port: number) {
         this.ip_address = serverUrl;
-        this.socket = io(serverUrl);
+        this.port = port;
+        this.socket = io(serverUrl + ':' + port);
         this.status = {
             status: 'idle',
             timestamp: Date.now(),
