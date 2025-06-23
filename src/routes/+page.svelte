@@ -84,13 +84,20 @@
 <!-- Add a text field for IP address -->
 <input type="text" id="ip" placeholder="Enter IP Address" />
 
-<!-- Display the list of IP addresses -->
+<!-- Display the list of IP addresses and their current timestamp -->
 <ul>
 	{#each connections as connection, i}
-		<li>{connection.ip_address} {status[i].status} {status[i].timestamp}</li>
+		<li>
+			{connection.ip_address}
+			{status[i].status}
+			<!-- Display timestamp as unix time (milliseconds since epoch) -->
+			{status[i].timestamp}
+		</li>
 	{/each}
 </ul>
 
+<button class="btn" onclick={start_ping}>Start Ping</button>
+<button class="btn" onclick={stop_ping}>Stop Ping</button>
 <button class="btn" id="start" onclick={start_recording}>Start</button>
 <button class="btn" id="stop" onclick={stop_recording}>Stop</button>
 <button class="btn" id="Download" onclick={download}>Download</button>
