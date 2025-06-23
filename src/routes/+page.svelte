@@ -8,6 +8,14 @@
 
 	let messages: string[] = $state([]);
 
+	function deleteConnection(index: number) {
+		const conn = connections[index];
+		if (conn) {
+			conn.disconnect();
+			connections.splice(index, 1);
+		}
+	}
+
 	function clearMessages() {
 		messages = [];
 	}
@@ -18,7 +26,7 @@
 
 	function addIP() {
 		const ip: string = (document.getElementById('ip') as HTMLInputElement).value;
-		connections.push(new CameraConnection(ip, 5000));
+		connections.push(new CameraConnection(ip, 5000, addMessage));
 	}
 
 	function start_ping() {
@@ -114,14 +122,13 @@
 	}
 </script>
 
-<!-- Add two buttons, one for adding an entry for IP and another for deleting -->
+<!-- Add button for adding an entry for IP -->
 <button class="btn" onclick={addIP}>Add</button>
-<button class="btn" id="delete">Delete</button>
 
 <!-- Add a text field for IP address -->
 <input type="text" id="ip" placeholder="Enter IP Address" />
 
-<!-- Display the list of IP addresses and their current timestamp -->
+<!-- Display the list of IP addresses and their current timestamp, with a delete button for each -->
 <ul>
 	{#each connections as connection, i}
 		<li>
@@ -129,6 +136,7 @@
 			{status[i].status}
 			<!-- Display timestamp as unix time (milliseconds since epoch) -->
 			{status[i].timestamp}
+			<button class="btn" onclick={() => deleteConnection(i)}>Delete</button>
 		</li>
 	{/each}
 </ul>
