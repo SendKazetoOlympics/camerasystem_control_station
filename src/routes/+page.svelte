@@ -8,6 +8,10 @@
 
 	let messages: string[] = $state([]);
 
+	function clearMessages() {
+		messages = [];
+	}
+
 	function addMessage(msg: string) {
 		messages = [...messages, msg];
 	}
@@ -145,6 +149,7 @@
 
 <!-- Status messages area -->
 <div style="margin: 1em 0;">
+	<button class="btn" onclick={clearMessages} style="margin-bottom: 0.5em;">Clear Messages</button>
 	{#each messages as msg}
 		<div>{msg}</div>
 	{/each}
