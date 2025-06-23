@@ -25,7 +25,7 @@
 
 	function start_recording() {
 		connections.forEach((connection) => {
-			fetch(`/api/start-recording/${connection.ip_address}`)
+			fetch(`/api/start_recording/${connection.ip_address}`)
 				.then((response) => response.json())
 				.then((data) => {
 					if (!data.success) {
@@ -42,7 +42,7 @@
 
 	function stop_recording() {
 		connections.forEach((connection) => {
-			fetch(`/api/stop-recording/${connection.ip_address}`)
+			fetch(`/api/stop_recording/${connection.ip_address}`)
 				.then((response) => response.json())
 				.then((data) => {
 					if (!data.success) {
