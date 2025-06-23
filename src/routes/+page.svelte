@@ -56,6 +56,48 @@
 		});
 		runNumber += 1;
 	}
+
+	function start_calibration() {
+		connections.forEach((connection) => {
+			fetch(`http://${connection.ip_address}:5000/start_mediamtx`, {
+				method: 'POST'
+			})
+				.then((response) => response.json())
+				.then((data) => {
+					if (data.status === 'started' || data.status === 'already running') {
+						alert(`Calibration started for ${connection.ip_address}`);
+					} else {
+						alert(
+							`Failed to start calibration for ${connection.ip_address}: ${data.error || data.status}`
+						);
+					}
+				})
+				.catch((err) => {
+					alert(`Error starting calibration for ${connection.ip_address}: ${err.message}`);
+				});
+		});
+	}
+
+	function stop_calibration() {
+		connections.forEach((connection) => {
+			fetch(`http://${connection.ip_address}:5000/stop_mediamtx`, {
+				method: 'POST'
+			})
+				.then((response) => response.json())
+				.then((data) => {
+					if (data.status === 'stopped' || data.status === 'not running') {
+						alert(`Calibration stopped for ${connection.ip_address}`);
+					} else {
+						alert(
+							`Failed to stop calibration for ${connection.ip_address}: ${data.error || data.status}`
+						);
+					}
+				})
+				.catch((err) => {
+					alert(`Error stopping calibration for ${connection.ip_address}: ${err.message}`);
+				});
+		});
+	}
 </script>
 
 <!-- Add two buttons, one for adding an entry for IP and another for deleting -->
@@ -81,6 +123,8 @@
 <button class="btn" onclick={stop_ping}>Stop Ping</button>
 <button class="btn" id="start" onclick={start_recording}>Start</button>
 <button class="btn" id="stop" onclick={stop_recording}>Stop</button>
+<button class="btn" id="start-calibration" onclick={start_calibration}>Start Calibration</button>
+<button class="btn" id="stop-calibration" onclick={stop_calibration}>Stop Calibration</button>
 
 <!-- Show the current run number (read-only) -->
 <div style="margin: 1em 0; font-weight: bold;">
