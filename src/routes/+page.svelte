@@ -25,13 +25,35 @@
 
 	function start_recording() {
 		connections.forEach((connection) => {
-			connection.startRecording();
+			fetch(`/api/start-recording/${connection.ip_address}`)
+				.then((response) => response.json())
+				.then((data) => {
+					if (!data.success) {
+						alert(
+							`Failed to start recording for ${connection.ip_address}: ${data.error || 'Unknown error'}`
+						);
+					}
+				})
+				.catch((err) => {
+					alert(`Error starting recording for ${connection.ip_address}: ${err.message}`);
+				});
 		});
 	}
 
 	function stop_recording() {
 		connections.forEach((connection) => {
-			connection.stopRecording();
+			fetch(`/api/stop-recording/${connection.ip_address}`)
+				.then((response) => response.json())
+				.then((data) => {
+					if (!data.success) {
+						alert(
+							`Failed to stop recording for ${connection.ip_address}: ${data.error || 'Unknown error'}`
+						);
+					}
+				})
+				.catch((err) => {
+					alert(`Error stopping recording for ${connection.ip_address}: ${err.message}`);
+				});
 		});
 	}
 
