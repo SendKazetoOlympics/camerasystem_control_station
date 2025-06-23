@@ -2,9 +2,10 @@ import type { RequestHandler } from '@sveltejs/kit';
 import fs from 'fs';
 import path from 'path';
 
-export const GET: RequestHandler = async ({ params }) => {
+export const GET: RequestHandler = async ({ params, url }) => {
 	const { ip } = params;
 	const port = 5000; // Default port, adjust if needed
+	const run = url.searchParams.get('run');
 
 	if (!ip) {
 		return new Response(JSON.stringify({ success: false, error: 'No IP provided' }), {
@@ -48,13 +49,27 @@ export const GET: RequestHandler = async ({ params }) => {
 		const videosDir = path.resolve('videos');
 		fs.mkdirSync(videosDir, { recursive: true });
 
+		// Create a folder with today's date
+		const today = new Date();
+		const yyyy = today.getFullYear();
+		const mm = String(today.getMonth() + 1).padStart(2, '0');
+		const dd = String(today.getDate()).padStart(2, '0');
+		const dateFolder = `${yyyy}-${mm}-${dd}`;
+		const datedDir = path.join(videosDir, dateFolder);
+		fs.mkdirSync(datedDir, { recursive: true });
+
+		// Use run number from client, default to 1 if not provided
+		const runNumber = run ? parseInt(run, 10) : 1;
+		const runDir = path.join(datedDir, `run${runNumber}`);
+		fs.mkdirSync(runDir, { recursive: true });
+
 		// Save the video file
-		const filePath = path.join(videosDir, `${ip}_video.mp4`);
+		const filePath = path.join(runDir, `${ip}_video.mp4`);
 		fs.writeFileSync(filePath, buffer);
 
-		// Append the timestamps to a global CSV file
+		// Append the timestamps to a global CSV file in the run directory
 		const timestamps = data.timestamps || {};
-		const recordingsCsvPath = path.join(videosDir, 'recordings.csv');
+		const recordingsCsvPath = path.join(runDir, 'recordings.csv');
 		const csvHeader = 'ip,start,stop\n';
 		const csvRow = `${ip},${timestamps.start || ''},${timestamps.stop || ''}\n`;
 
@@ -64,7 +79,7 @@ export const GET: RequestHandler = async ({ params }) => {
 		}
 		fs.appendFileSync(recordingsCsvPath, csvRow);
 
-		return new Response(JSON.stringify({ success: true, filePath, recordingsCsvPath }), {
+		return new Response(JSON.stringify({ success: true, filePath, recordingsCsvPath, runDir }), {
 			status: 200,
 			headers: { 'Content-Type': 'application/json' }
 		});

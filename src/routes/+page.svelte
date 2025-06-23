@@ -35,9 +35,11 @@
 		});
 	}
 
+	let runNumber = $state(1);
+
 	function download() {
 		connections.forEach((connection) => {
-			fetch(`/api/download/${connection.ip_address}`)
+			fetch(`/api/download/${connection.ip_address}?run=${runNumber}`)
 				.then((response) => response.json())
 				.then((data) => {
 					if (data.success) {
@@ -52,6 +54,7 @@
 					alert(`Error saving video for ${connection.ip_address}: ${err.message}`);
 				});
 		});
+		runNumber += 1;
 	}
 </script>
 
@@ -78,4 +81,10 @@
 <button class="btn" onclick={stop_ping}>Stop Ping</button>
 <button class="btn" id="start" onclick={start_recording}>Start</button>
 <button class="btn" id="stop" onclick={stop_recording}>Stop</button>
+
+<!-- Show the current run number (read-only) -->
+<div style="margin: 1em 0; font-weight: bold;">
+	Current Run Number: {runNumber}
+</div>
+
 <button class="btn" id="Download" onclick={download}>Download</button>
