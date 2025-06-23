@@ -6,6 +6,12 @@
 	let connections: CameraConnection[] = $state([]);
 	const status = $derived.by(() => connections.map((connection) => connection.status));
 
+	let messages: string[] = $state([]);
+
+	function addMessage(msg: string) {
+		messages = [...messages, msg];
+	}
+
 	function addIP() {
 		const ip: string = (document.getElementById('ip') as HTMLInputElement).value;
 		connections.push(new CameraConnection(ip, 5000));
@@ -15,24 +21,28 @@
 		connections.forEach((connection) => {
 			connection.startHeartbeat();
 		});
+		addMessage('Started ping for all cameras.');
 	}
 
 	function stop_ping() {
 		connections.forEach((connection) => {
 			connection.stopHeartbeat();
 		});
+		addMessage('Stopped ping for all cameras.');
 	}
 
 	function start_recording() {
 		connections.forEach((connection) => {
 			connection.startRecording();
 		});
+		addMessage('Started recording for all cameras.');
 	}
 
 	function stop_recording() {
 		connections.forEach((connection) => {
 			connection.stopRecording();
 		});
+		addMessage('Stopped recording for all cameras.');
 	}
 
 	let runNumber = $state(1);
@@ -43,15 +53,15 @@
 				.then((response) => response.json())
 				.then((data) => {
 					if (data.success) {
-						alert(`Saved video for ${connection.ip_address} at ${data.filePath}`);
+						addMessage(`Saved video for ${connection.ip_address} at ${data.filePath}`);
 					} else {
-						alert(
+						addMessage(
 							`Failed to save video for ${connection.ip_address}: ${data.error || 'Unknown error'}`
 						);
 					}
 				})
 				.catch((err) => {
-					alert(`Error saving video for ${connection.ip_address}: ${err.message}`);
+					addMessage(`Error saving video for ${connection.ip_address}: ${err.message}`);
 				});
 		});
 		runNumber += 1;
@@ -65,15 +75,15 @@
 				.then((response) => response.json())
 				.then((data) => {
 					if (data.status === 'started' || data.status === 'already running') {
-						alert(`Calibration started for ${connection.ip_address}`);
+						addMessage(`Calibration started for ${connection.ip_address}`);
 					} else {
-						alert(
+						addMessage(
 							`Failed to start calibration for ${connection.ip_address}: ${data.error || data.status}`
 						);
 					}
 				})
 				.catch((err) => {
-					alert(`Error starting calibration for ${connection.ip_address}: ${err.message}`);
+					addMessage(`Error starting calibration for ${connection.ip_address}: ${err.message}`);
 				});
 		});
 	}
@@ -86,15 +96,15 @@
 				.then((response) => response.json())
 				.then((data) => {
 					if (data.status === 'stopped' || data.status === 'not running') {
-						alert(`Calibration stopped for ${connection.ip_address}`);
+						addMessage(`Calibration stopped for ${connection.ip_address}`);
 					} else {
-						alert(
+						addMessage(
 							`Failed to stop calibration for ${connection.ip_address}: ${data.error || data.status}`
 						);
 					}
 				})
 				.catch((err) => {
-					alert(`Error stopping calibration for ${connection.ip_address}: ${err.message}`);
+					addMessage(`Error stopping calibration for ${connection.ip_address}: ${err.message}`);
 				});
 		});
 	}
@@ -132,3 +142,10 @@
 </div>
 
 <button class="btn" id="Download" onclick={download}>Download</button>
+
+<!-- Status messages area -->
+<div style="margin: 1em 0;">
+	{#each messages as msg}
+		<div>{msg}</div>
+	{/each}
+</div>
