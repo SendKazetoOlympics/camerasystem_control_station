@@ -67,19 +67,30 @@ export const GET: RequestHandler = async ({ params, url }) => {
 		const filePath = path.join(runDir, `${ip}_video.mp4`);
 		fs.writeFileSync(filePath, buffer);
 
-		// Append the timestamps to a global CSV file in the run directory
-		const timestamps = data.timestamps || {};
-		const recordingsCsvPath = path.join(runDir, 'recordings.csv');
-		const csvHeader = 'ip,start,stop\n';
-		const csvRow = `${ip},${timestamps.start || ''},${timestamps.stop || ''}\n`;
-
-		// If the CSV doesn't exist, write the header first
-		if (!fs.existsSync(recordingsCsvPath)) {
-			fs.writeFileSync(recordingsCsvPath, csvHeader);
+		// Append the timestamps to a per-IP CSV file in the run directory
+		// Ensure timestamps is always an array of numbers
+		let timestamps: number[] = [];
+		console.log('Timestamps:', data.timestamps.timestamps);
+		if (Array.isArray(data.timestamps.timestamps)) {
+			timestamps = data.timestamps.timestamps;
+		} else if (data.timestamps.timestamps && Array.isArray(data.timestamps.timestamps.values)) {
+			timestamps = data.timestamps.timestamps.values;
+		} else if (typeof data.timestamps === 'number') {
+			timestamps = [data.timestamps.timestamps];
 		}
-		fs.appendFileSync(recordingsCsvPath, csvRow);
+		const ipCsvPath = path.join(runDir, `${ip}_timestamps.csv`);
 
-		return new Response(JSON.stringify({ success: true, filePath, recordingsCsvPath, runDir }), {
+		// Ensure the file exists before appending
+		if (!fs.existsSync(ipCsvPath)) {
+			fs.writeFileSync(ipCsvPath, '');
+		}
+
+		// Write each timestamp on its own line
+		timestamps.forEach((ts) => {
+			fs.appendFileSync(ipCsvPath, `${ts}\n`);
+		});
+
+		return new Response(JSON.stringify({ success: true, filePath, ipCsvPath, runDir }), {
 			status: 200,
 			headers: { 'Content-Type': 'application/json' }
 		});
