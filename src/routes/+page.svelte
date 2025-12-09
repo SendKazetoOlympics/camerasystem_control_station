@@ -2,6 +2,7 @@
 
 <script lang="ts">
 	import { CameraConnection } from '$lib/CameraConnection.svelte';
+	import { onMount } from 'svelte';
 
 	let connections: CameraConnection[] = $state([]);
 	const status = $derived.by(() => connections.map((connection) => connection.status));
@@ -120,7 +121,21 @@
 				});
 		});
 	}
+
+	function on_key_down(event: KeyboardEvent) {
+	console.log(`Key pressed: ${event.key}`);
+      // Prevent default browser behavior (e.g., scrolling with arrow keys)
+      event.preventDefault();
+	}
+
+	onMount(() => {
+		connections.push(new CameraConnection('192.168.0.101', 5000, addMessage));
+		connections.push(new CameraConnection('192.168.0.102', 5000, addMessage));
+		connections.push(new CameraConnection('192.168.0.103', 5000, addMessage));
+	});
 </script>
+
+<svelte:window onkeydown={on_key_down} />
 
 <!-- Add button for adding an entry for IP -->
 <button class="btn" onclick={addIP}>Add</button>
